@@ -1118,8 +1118,12 @@ function toggleTheme() {
 }
 
 const savedTheme = localStorage.getItem('theme');
-if (savedTheme === 'dark') {
+const initialTheme = savedTheme || 'dark';
+
+if (initialTheme === 'dark') {
   document.body.classList.add('dark');
+} else {
+  document.body.classList.remove('dark');
 }
 updateToggleIcon();
 
@@ -1176,6 +1180,8 @@ const overlay = document.getElementById('tutorial-overlay');
 const tutorialBox = document.getElementById('tutorial-box');
 
 function showStep(index) {
+  if (!overlay || !tutorialBox) return;
+
   if (index >= tourSteps.length) {
     endTour();
     return;
@@ -1184,10 +1190,15 @@ function showStep(index) {
   const step = tourSteps[index];
   const targetElement = document.getElementById(step.elementId);
 
-  // Texto y navegación
-  document.getElementById('tutorial-text').innerHTML = step.text;
-  document.getElementById('tutorial-prev').style.display = index > 0 ? 'inline-block' : 'none';
+  const tutorialText = document.getElementById('tutorial-text');
+  const tutorialPrev = document.getElementById('tutorial-prev');
   const nextBtn = document.getElementById('tutorial-next');
+
+  if (!tutorialText || !tutorialPrev || !nextBtn) return;
+
+  // Texto y navegación
+  tutorialText.innerHTML = step.text;
+  tutorialPrev.style.display = index > 0 ? 'inline-block' : 'none';
   nextBtn.textContent = index === tourSteps.length - 1 ? 'Finalizar' : 'Siguiente';
 
   if (!targetElement) { endTour(); return; }
@@ -1232,6 +1243,7 @@ function showStep(index) {
 }
 
 function startTour() {
+  if (!overlay) return;
   overlay.style.display = 'block';
   // Pequeño delay para que la transición CSS se aplique
   setTimeout(() => {
@@ -1241,36 +1253,46 @@ function startTour() {
 }
 
 function endTour() {
+  if (!overlay) return;
   overlay.style.opacity = '0';
   setTimeout(() => {
     overlay.style.display = 'none';
     // Ocultar de nuevo el panel de herramientas si lo mostramos para el ejemplo
-    document.getElementById('floatingTools').style.display = 'none';
+    const floatingTools = document.getElementById('floatingTools');
+    if (floatingTools) floatingTools.style.display = 'none';
   }, 400);
   localStorage.setItem('editorCanvasProTutorialSeen', 'true');
 }
 
-// Event Listeners para la navegación del tour
-document.getElementById('tutorial-next').addEventListener('click', () => {
-  currentStep++;
-  showStep(currentStep);
-});
+function initTutorial() {
+  const tutorialNext = document.getElementById('tutorial-next');
+  const tutorialPrev = document.getElementById('tutorial-prev');
+  const tutorialSkip = document.getElementById('tutorial-skip');
 
-document.getElementById('tutorial-prev').addEventListener('click', () => {
-  if (currentStep > 0) {
-    currentStep--;
+  if (!tutorialNext || !tutorialPrev || !tutorialSkip) return;
+
+  // Event Listeners para la navegación del tour
+  tutorialNext.addEventListener('click', () => {
+    currentStep++;
     showStep(currentStep);
-  }
-});
+  });
 
-document.getElementById('tutorial-skip').addEventListener('click', endTour);
+  tutorialPrev.addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  });
 
-// Iniciar el tour si es la primera vez
-window.addEventListener('load', () => {
+  tutorialSkip.addEventListener('click', endTour);
+
+  // Iniciar el tour si es la primera vez
   if (!localStorage.getItem('editorCanvasProTutorialSeen')) {
     startTour();
   }
-});
+}
+
+window.addEventListener('load', initTutorial);
 </script>
 
 
