@@ -89,6 +89,25 @@ header::-webkit-scrollbar {
 #exportBtn { background: #E9ECEF; } /* Un color neutral para que los de CMYK destaquen */
 #clearCanvasBtn { background: #3db52d; } /* Novedad: Botón para limpiar */
 
+#addImageBtn svg path,
+#addImageBtn svg rect,
+#addImageBtn svg circle {
+  fill: #000000 !important;
+  stroke: #000000 !important;
+}
+#addImageBtn .icon-label {
+  color: #000000 !important;
+}
+
+body.dark #addImageBtn svg path,
+body.dark #addImageBtn svg rect,
+body.dark #addImageBtn svg circle,
+body.dark #addImageBtn .icon-label {
+  fill: #000000 !important;
+  stroke: #000000 !important;
+  color: #000000 !important;
+}
+
 
 .icon-btn::after {
   content: '';
